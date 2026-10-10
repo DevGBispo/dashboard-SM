@@ -49,7 +49,7 @@ button:focus-visible{outline:3px solid #a2ca4f;outline-offset:3px}
 <div class="call-list" id="call-list"></div><p class="call-help" id="call-help">Importe primeiro um arquivo na aba Operações para selecionar reservas.</p></section>
 <section class="call-panel"><div class="call-step"><span class="step-index">2</span><div><h2>Distribuição por terminal</h2><p>O sistema soma as unidades previstas das reservas selecionadas.</p></div></div><div id="call-groups" class="call-groups"><div class="empty">Selecione reservas para visualizar os terminais.</div></div></section>
 <section class="call-panel"><div class="call-step"><span class="step-index">3</span><div><h2>Resumo da chamada</h2><p>Conferência antes de avançar para a alocação dos motoristas.</p></div></div><div id="call-summary" class="call-summary">Nenhuma reserva selecionada.</div><div class="call-footer"><p>Quantidade e lista de motoristas: aguardando a configuração da escala pré-definida. Não serão calculadas automaticamente a partir das unidades.</p><button type="button" class="primary" id="call-preview">Conferir programação</button></div><p id="call-feedback" class="call-feedback" role="status"></p></section></main>
-<main class="content" aria-label="Controle de embarque" id="controle-page" hidden><div class="page-heading"><div><h1>Controle de embarque</h1><p>Pesquise a unidade, vincule o motorista e confirme o carregamento.</p></div><span class="demo-note">Alterações locais • não enviadas ao sistema original</span></div><div class="stats"><div class="stat"><span>Unidades identificadas</span><strong id="unit-total">0</strong></div><div class="stat"><span>Carregamentos confirmados</span><strong id="unit-loaded">0</strong></div><div class="stat"><span>Pendentes</span><strong id="unit-pending">0</strong></div></div><div class="toolbar"><input id="unit-search" type="search" placeholder="Pesquisar unidade, navio, reserva ou motorista" aria-label="Pesquisar unidade"><select id="unit-filter" aria-label="Filtrar carregamento"><option value="">Todas as unidades</option><option value="pending">Pendentes</option><option value="loaded">Confirmadas</option></select></div><p id="unit-warning" class="demo-note" hidden></p><div class="unit-list" id="unit-list"></div><div class="call-footer"><p id="unit-message" role="status">Importe as unidades pela aba Operações para iniciar.</p></div></main><div class="detail-overlay" id="overlay" hidden><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="detail-title"><div class="drawer-head"><div><small>DETALHES DA RESERVA</small><h2 id="detail-title">Operação</h2><p id="detail-subtitle"></p></div><button class="close" type="button" id="close" aria-label="Fechar detalhes">×</button></div><div id="detail-fields" class="detail-grid"></div><section class="detail-section"><h3>Situação operacional</h3><label class="field">Atualizar situação<select id="status-select"><option>Liberado</option><option>AG. Liberação</option><option>Cancelado</option></select></label><div id="reason" class="reason" hidden></div></section><section class="detail-section"><h3>Observação e troca de navio</h3><label class="field checkbox-editor"><input id="changed-vessel" type="checkbox"> Trocou navio</label><label class="field">Motivo ou informação importante<textarea id="observation" placeholder="Descreva o motivo da pendência ou cancelamento"></textarea></label><div id="ship-alert" class="reason info" hidden></div></section><div class="drawer-actions"><button class="ghost" type="button" id="cancel">Fechar</button><button class="primary" type="button" id="save">Salvar alterações</button></div></aside></div>
+<main class="content" aria-label="Controle de embarque" id="controle-page" hidden><div class="page-heading"><div><h1>Controle de embarque</h1><p>Pesquise a unidade, vincule o motorista e confirme o carregamento.</p></div><span class="demo-note">Alterações locais • não enviadas ao sistema original</span></div><div class="stats"><div class="stat"><span>Unidades identificadas</span><strong id="unit-total">0</strong></div><div class="stat"><span>Carregamentos confirmados</span><strong id="unit-loaded">0</strong></div><div class="stat"><span>Pendentes</span><strong id="unit-pending">0</strong></div></div><div class="toolbar"><input id="unit-search" type="search" placeholder="Pesquisar unidade, navio, reserva ou motorista" aria-label="Pesquisar unidade"><select id="unit-filter" aria-label="Filtrar carregamento"><option value="">Todas as unidades</option><option value="pending">Pendentes</option><option value="loaded">Confirmadas</option></select></div><p id="unit-warning" class="demo-note" hidden></p><div class="unit-list" id="unit-list"></div><div class="call-footer"><p id="unit-message" role="status">Confirme uma programação na aba Chamada para receber as unidades.</p></div></main><div class="detail-overlay" id="overlay" hidden><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="detail-title"><div class="drawer-head"><div><small>DETALHES DA RESERVA</small><h2 id="detail-title">Operação</h2><p id="detail-subtitle"></p></div><button class="close" type="button" id="close" aria-label="Fechar detalhes">×</button></div><div id="detail-fields" class="detail-grid"></div><section class="detail-section"><h3>Situação operacional</h3><label class="field">Atualizar situação<select id="status-select"><option>Liberado</option><option>AG. Liberação</option><option>Cancelado</option></select></label><div id="reason" class="reason" hidden></div></section><section class="detail-section"><h3>Observação e troca de navio</h3><label class="field checkbox-editor"><input id="changed-vessel" type="checkbox"> Trocou navio</label><label class="field">Motivo ou informação importante<textarea id="observation" placeholder="Descreva o motivo da pendência ou cancelamento"></textarea></label><div id="ship-alert" class="reason info" hidden></div></section><div class="drawer-actions"><button class="ghost" type="button" id="cancel">Fechar</button><button class="primary" type="button" id="save">Salvar alterações</button></div></aside></div>
 </div>
 </div>
 <script>
@@ -183,7 +183,7 @@ function loadRecords(raw){
   if(!item||!item.reserva||!item.navio)throw Error("Navio ou reserva ausente no registro "+(i+1));
   return {id:i+1,navio:String(item.navio),reserva:String(item.reserva),cliente:String(item.cliente||""),armador:String(item.armador||""),deadline:String(item.deadline||"S/PREVISÃO"),terminal:String(item.terminal||""),tipo:String(item.tipo||""),quantidade:String(item.quantidade||""),conteineres:String(item.conteineres||""),status:allowed.includes(item.status)?item.status:"AG. Liberação",observacao:String(item.observacao||""),trocouNavio:item.trocouNavio===true,navioAnterior:String(item.navioAnterior||"")};
  });
- records.splice(0,records.length,...loaded);selectedBookings.clear();callConfig.clear();loadedUnits.clear();renderCalls();renderUnits();$("search").value="";$("filter").value="";paint();
+ records.splice(0,records.length,...loaded);selectedBookings.clear();confirmedBookings.clear();callConfig.clear();loadedUnits.clear();renderCalls();renderUnits();$("search").value="";$("filter").value="";paint();
  $("import-message").textContent=records.length+" reservas importadas localmente • alterações não são salvas";
 }
 async function importLocalFile(event,kind){
@@ -203,9 +203,11 @@ document.querySelectorAll("[data-view]").forEach(button=>button.addEventListener
 
 
 const loadedUnits=new Map();
+const confirmedBookings=new Set();
 function unitEntries(){
  const units=[];const seen=new Set();
  for(const record of records){
+  if(!confirmedBookings.has(String(record.id)))continue;
   for(const id of String(record.conteineres||"").split(/[,;\n]+/).map(x=>x.trim().toUpperCase()).filter(Boolean)){
    if(!/^[A-Z]{4}[0-9]{7}$/.test(id))continue;
    const key=record.reserva+"|"+id;
@@ -220,7 +222,7 @@ function renderUnits(){
  for(const key of loadedUnits.keys())if(!valid.has(key))loadedUnits.delete(key);
  const done=units.filter(x=>loadedUnits.get(x.key)?.confirmed).length;
  $("unit-total").textContent=units.length;$("unit-loaded").textContent=done;$("unit-pending").textContent=units.length-done;
- const planned=records.reduce((n,r)=>n+plannedUnits(r.quantidade),0);
+ const planned=records.filter(r=>confirmedBookings.has(String(r.id))).reduce((n,r)=>n+plannedUnits(r.quantidade),0);
  $("unit-warning").hidden=planned===units.length;
  $("unit-warning").textContent=planned!==units.length?"Atenção: "+planned+" unidades previstas e "+units.length+" identificadores válidos encontrados. Confira as reservas antes de confirmar os carregamentos.":"";
  const search=$("unit-search").value.trim().toLocaleLowerCase("pt-BR"),filter=$("unit-filter").value;
@@ -230,7 +232,7 @@ function renderUnits(){
  });
  $("unit-list").innerHTML=filtered.map(u=>{const value=loadedUnits.get(u.key)||{},loaded=!!value.confirmed;
  return '<article class="unit-card '+(loaded?'loaded':'')+'"><div><h3>'+esc(u.id)+'</h3><small>'+esc(u.record.navio)+' · '+esc(u.record.reserva)+'<br>'+esc(u.record.terminal)+'</small></div><span class="pill '+(loaded?'liberado':'aguardando')+'">'+(loaded?'Carregamento confirmado':'Aguardando carregamento')+'</span><label>Motorista vinculado<input data-driver="'+esc(u.key)+'" value="'+esc(value.driver||"")+'" placeholder="Nome ou chapeira" aria-label="Motorista da unidade '+esc(u.id)+'"></label><button type="button" class="'+(loaded?'ghost':'primary')+'" data-confirm="'+esc(u.key)+'">'+(loaded?'Desfazer confirmação':'Confirmar carregamento')+'</button></article>'
- }).join("")||'<div class="empty">Nenhuma unidade encontrada. Confira a importação ou a pesquisa.</div>';
+ }).join("")||'<div class="empty">Nenhuma unidade encontrada. Confirme a programação na aba Chamada ou confira a pesquisa.</div>';
 }
 $("unit-search").addEventListener("input",renderUnits);$("unit-filter").addEventListener("change",renderUnits);
 $("unit-list").addEventListener("input",event=>{const input=event.target.closest("[data-driver]");if(!input)return;const data=loadedUnits.get(input.dataset.driver)||{driver:"",confirmed:false};data.driver=input.value;loadedUnits.set(input.dataset.driver,data)});
@@ -252,7 +254,18 @@ function renderCalls(){
 $("call-list").addEventListener("change",e=>{const item=e.target.closest("input[data-booking]");if(!item)return;item.checked?selectedBookings.add(item.dataset.booking):selectedBookings.delete(item.dataset.booking);renderCalls()});
 $("call-groups").addEventListener("input",e=>{const input=e.target.closest("input[data-terminal]");if(!input)return;const v=callConfig.get(input.dataset.terminal)||{time:"",patio:""};v[input.dataset.field]=input.value;callConfig.set(input.dataset.terminal,v)});
 $("call-search").addEventListener("input",renderCalls);
-$("call-preview").addEventListener("click",()=>{const chosen=records.filter(r=>selectedBookings.has(callKey(r)));if(!chosen.length){$("call-feedback").textContent="Selecione ao menos uma reserva.";return}const terminals=[...new Set(chosen.map(r=>r.terminal||"Terminal não informado"))];const missing=terminals.filter(t=>!callConfig.get(t)?.time||!callConfig.get(t)?.patio?.trim());$("call-feedback").textContent=missing.length?"Informe horário e pátio para: "+missing.join(", "):"Programação conferida. A alocação de motoristas depende da escala pré-definida e ainda não foi implementada."});
+$("call-preview").addEventListener("click",()=>{
+ const chosen=records.filter(r=>selectedBookings.has(callKey(r)));
+ if(!chosen.length){$("call-feedback").textContent="Selecione ao menos uma reserva.";return}
+ const terminals=[...new Set(chosen.map(r=>r.terminal||"Terminal não informado"))];
+ const missing=terminals.filter(t=>!callConfig.get(t)?.time||!callConfig.get(t)?.patio?.trim());
+ if(missing.length){$("call-feedback").textContent="Informe horário e pátio para: "+missing.join(", ");return}
+ confirmedBookings.clear();chosen.forEach(r=>confirmedBookings.add(callKey(r)));
+ loadedUnits.clear();
+ renderUnits();$("call-feedback").textContent="Programação confirmada: "+chosen.length+" reserva(s) enviadas ao Controle de embarque.";
+ document.querySelector('[data-view="controle"]').click();
+ $("unit-message").textContent="Programação recebida da Chamada. Vincule os motoristas e confirme os carregamentos.";
+});
 $("search").addEventListener("input",paint);$("filter").addEventListener("change",paint);paint();
 </script></body>
 </html>
