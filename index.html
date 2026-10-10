@@ -52,7 +52,7 @@ const $=id=>document.getElementById(id);let activeId=null;let previousFocus=null
 const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const cls=status=>status==="Liberado"?"liberado":status==="Cancelado"?"cancelado":"aguardando";
 // A planilha representa quantidade como "20 pés / 40 pés", por exemplo "0 / 6".
-function plannedUnits(value){const raw=String(value??"").trim();const pair=raw.match(/^(\\d+)\\s*\\/\\s*(\\d+)$/);if(pair)return Number(pair[1])+Number(pair[2]);if(/^\\d+$/.test(raw))return Number(raw);return 0;}
+function plannedUnits(value){const raw=String(value??"").trim();const pair=raw.match(/^([0-9]+)\s*\/\s*([0-9]+)$/);if(pair)return Number(pair[1])+Number(pair[2]);if(/^[0-9]+$/.test(raw))return Number(raw);return 0;}
 function paint(){
  for(const st of ["Liberado","AG. Liberação","Cancelado"]){const key=st==="Liberado"?"liberado":st==="Cancelado"?"cancelado":"aguardando";const group=records.filter(r=>r.status===st);$("count-"+key).textContent=group.length;const total=group.reduce((sum,r)=>sum+plannedUnits(r.quantidade),0);$("units-"+key).textContent=total.toLocaleString("pt-BR")+" unidades previstas";}
  const query=$("search").value.toLocaleLowerCase("pt-BR").trim(),status=$("filter").value;
