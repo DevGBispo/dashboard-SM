@@ -110,7 +110,7 @@ function parseCrystalReportCSV(text){
  const items=[];let last=null;let currentType="";
  for(const row of rows){
   if(norm(row[0]||"")==="PLANEJAMENTODEPATIO"&&row.length===11){currentType=row[10]||"";continue}
-  if(row.length===11&&/^\\d{6,}/.test(row[1]||"")){const [navio,reserva,armador,cliente,deadline,terminal,quantidade,observacao,container]=row;last={navio,reserva,armador,cliente,deadline,terminal,quantidade:(quantidade||"").replace(/\\s+/g," ").trim(),observacao:observacao||"",conteineres:container||"",tipo:currentType,status:/LIBERAD/i.test(observacao||"")?"Liberado":"AG. Liberação",trocouNavio:/TROCOU NAVIO|MUDOU NAVIO/i.test(observacao||"")};items.push(last);continue}
+  if(row.length===11&&/^[0-9]{6,}/.test(row[1]||"")){const [navio,reserva,armador,cliente,deadline,terminal,quantidade,observacao,container]=row;last={navio,reserva,armador,cliente,deadline,terminal,quantidade:(quantidade||"").replace(/[\t\r\n ]+/g," ").trim(),observacao:observacao||"",conteineres:container||"",tipo:currentType,status:/LIBERAD/i.test(observacao||"")?"Liberado":"AG. Liberação",trocouNavio:/TROCOU NAVIO|MUDOU NAVIO/i.test(observacao||"")};items.push(last);continue}
   if(norm(row[0]||"")!=="PLANEJAMENTODEPATIO")continue;
   const prefix=row.findIndex((v,i)=>i>=9&&norm(v)==="OBSERVACOESGERAIS");
   if(prefix<0)continue;
