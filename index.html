@@ -22,6 +22,8 @@ button:focus-visible{outline:3px solid #a2ca4f;outline-offset:3px}
 .header-title{font-size:12px;font-weight:800;letter-spacing:.05em;color:#075530}
 .content{flex:1;min-width:0;background:#f3f6f4}
 @media(max-width:720px){.shell{grid-template-columns:1fr}.sidebar{padding:9px 12px}.sidebar-label{display:none}.sidebar-button{width:auto}.header{min-height:64px;padding:12px 16px}}
+
+.content{padding:clamp(16px,2.5vw,36px)}.page-heading{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:20px}.page-heading h1{font-size:clamp(23px,2.3vw,30px);margin:0 0 6px;color:#143e29}.page-heading p{font-size:13px;color:#66736c;margin:0}.demo-note{font-size:12px;color:#476b55;background:#e9f4e9;padding:10px 14px;border-radius:8px;border:1px solid #cce0d0}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px}.stat{background:#fff;border:1px solid #dfe7e2;border-radius:11px;padding:18px;box-shadow:0 2px 7px #173b2110}.stat span{display:block;font-size:12px;color:#6f7e73}.stat strong{display:block;margin-top:8px;font-size:30px;color:#173b27}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}.toolbar input,.toolbar select,.field select,.field textarea{font:inherit;border:1px solid #cfdbd2;border-radius:9px;background:#fff;min-height:44px;padding:10px 12px;color:#233b2b}.toolbar input{flex:1;min-width:190px}.toolbar select{min-width:185px}.table-container{background:#fff;border:1px solid #dfe7e2;border-radius:12px;overflow-x:auto}.operations{width:100%;border-collapse:collapse;min-width:800px;font-size:13px}.operations th{background:#f5f8f5;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#597163;text-align:left}.operations td,.operations th{border-bottom:1px solid #eaf0eb;padding:14px 16px}.operations tr:last-child td{border-bottom:0}.operations td strong{display:block;color:#263b2d}.operations td small{display:block;color:#7c8b80;margin-top:4px}.pill{display:inline-block;padding:6px 10px;border-radius:20px;font-weight:750;font-size:11px;white-space:nowrap}.pill.liberado{background:#e0f4e6;color:#166136}.pill.aguardando{background:#fff0c2;color:#885b00}.pill.cancelado{background:#ffe1e1;color:#a62525}.alert{display:inline-block;font-size:11px;font-weight:750;color:#a33c20;background:#fff0de;padding:5px 8px;border-radius:6px;margin-top:6px}.view-btn,.primary,.ghost{min-height:44px;padding:10px 14px;border-radius:9px;font-weight:700;border:1px solid #cddbd0;background:#fff;color:#075530}.view-btn:hover,.ghost:hover{background:#eff7dc}.primary{background:#075530;color:#fff;border-color:#075530}.detail-overlay{position:fixed;inset:0;z-index:30;background:#0c2419a3;display:flex;justify-content:flex-end}.detail-overlay[hidden]{display:none}.drawer{background:#fff;height:100%;width:min(620px,100%);overflow-y:auto;box-shadow:-8px 0 30px #0002;padding:26px}.drawer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:18px;border-bottom:1px solid #e0e9e3}.drawer-head h2{margin:3px 0;font-size:24px;color:#173c28}.drawer-head p{margin:0;font-size:13px;color:#738477}.close{width:44px;height:44px;border:0;border-radius:9px;background:#f1f5f1;color:#21452d;font-size:24px}.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0}.detail-item{padding:13px;border:1px solid #e4ebe6;border-radius:8px;min-width:0}.detail-item small{display:block;color:#758578;font-size:11px;margin-bottom:6px}.detail-item strong{overflow-wrap:anywhere;font-size:13px}.detail-section{border-top:1px solid #e8eee9;padding-top:20px;margin-top:20px}.detail-section h3{font-size:14px;color:#1c412d;margin:0 0 12px}.field{display:grid;gap:8px;font-size:13px;font-weight:650;color:#2b4935}.field select,.field textarea{width:100%}.field textarea{resize:vertical;min-height:100px}.reason{border-left:4px solid #dea928;background:#fff7df;border-radius:5px;padding:15px;margin:13px 0;line-height:1.55;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.reason.cancel{border-color:#d34242;background:#fff0f0}.reason.info{border-color:#2b7651;background:#eff7f0}.drawer-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:22px}.empty{text-align:center;padding:42px;color:#687d70;font-size:13px}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #a2ca4f;outline-offset:2px}@media(max-width:850px){.stats{gap:9px}.stat{padding:13px}.stat strong{font-size:25px}}@media(max-width:720px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stat span{font-size:10px;min-height:27px}.stat strong{font-size:24px}.drawer{padding:18px}.detail-grid{gap:9px}.detail-item{padding:10px}}@media(max-width:380px){.stats{grid-template-columns:1fr}.stat span{min-height:0}.detail-grid{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -32,8 +34,57 @@ button:focus-visible{outline:3px solid #a2ca4f;outline-offset:3px}
 </aside>
 <div class="main">
 <header class="header"><div class="logo">S<span>.</span>M</div><div class="header-divider"></div><div class="header-title">S. MAGALHÃES</div></header>
-<main class="content" aria-label="Operações"></main>
+<main class="content" aria-label="Operações">
+<div class="page-heading"><div><h1>Operações</h1><p>Reservas, navios, deadlines e situações operacionais.</p></div><span class="demo-note">Protótipo • dados fictícios • alterações apenas nesta página</span></div>
+<div class="stats"><div class="stat"><span>Liberado</span><strong id="count-liberado">0</strong></div><div class="stat"><span>AG. Liberação</span><strong id="count-aguardando">0</strong></div><div class="stat"><span>Cancelado</span><strong id="count-cancelado">0</strong></div></div>
+<div class="toolbar"><input id="search" type="search" placeholder="Buscar cliente, reserva ou navio" aria-label="Buscar operações"><select id="filter" aria-label="Filtrar situação"><option value="">Todas as situações</option><option value="Liberado">Liberado</option><option value="AG. Liberação">AG. Liberação</option><option value="Cancelado">Cancelado</option></select></div>
+<div class="table-container"><table class="operations"><thead><tr><th>Cliente / Reserva</th><th>Navio</th><th>Terminal</th><th>Deadline</th><th>Situação</th><th>Detalhes</th></tr></thead><tbody id="operations-rows"></tbody></table><div class="empty" id="empty" hidden>Nenhuma operação encontrada.</div></div>
+</main>
+<div class="detail-overlay" id="overlay" hidden><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="detail-title"><div class="drawer-head"><div><small>DETALHES DA RESERVA</small><h2 id="detail-title">Operação</h2><p id="detail-subtitle"></p></div><button class="close" type="button" id="close" aria-label="Fechar detalhes">×</button></div><div id="detail-fields" class="detail-grid"></div><section class="detail-section"><h3>Situação operacional</h3><label class="field">Atualizar situação<select id="status-select"><option>Liberado</option><option>AG. Liberação</option><option>Cancelado</option></select></label><div id="reason" class="reason" hidden></div></section><section class="detail-section"><h3>Observação</h3><label class="field">Motivo ou informação importante<textarea id="observation" placeholder="Descreva o motivo da pendência ou cancelamento"></textarea></label><div id="ship-alert" class="reason info" hidden></div></section><div class="drawer-actions"><button class="ghost" type="button" id="cancel">Fechar</button><button class="primary" type="button" id="save">Atualizar situação</button></div></aside></div>
 </div>
 </div>
-</body>
+<script>
+"use strict";
+// Registros 100% demonstrativos. Nada é enviado a servidores.
+const records=[
+{id:1,cliente:"Cliente Exemplo A",reserva:"DEMO-001",navio:"Navio Exemplo 01",navioAnterior:"",terminal:"BTP",deadline:"14/10/2026 06:00",tipo:"Pré-Stacking",quantidade:"40 HC",conteineres:"DEMO0000001, DEMO0000002",status:"Liberado",observacao:"Liberação confirmada para embarque.",trocouNavio:false},
+{id:2,cliente:"Cliente Exemplo B",reserva:"DEMO-002",navio:"Navio Exemplo 02",navioAnterior:"Navio Exemplo 00",terminal:"DP World",deadline:"15/10/2026 10:00",tipo:"Saída Exportação Consolidada",quantidade:"20 UN",conteineres:"DEMO0000003",status:"AG. Liberação",observacao:"Aguardando confirmação do terminal. Navio alterado na programação.",trocouNavio:true},
+{id:3,cliente:"Cliente Exemplo C",reserva:"DEMO-003",navio:"Navio Exemplo 03",navioAnterior:"",terminal:"Ecoporto",deadline:"16/10/2026 15:00",tipo:"Pré-Stacking",quantidade:"40 HC",conteineres:"DEMO0000004",status:"Cancelado",observacao:"Reserva cancelada; aguardando definição de nova programação.",trocouNavio:false},
+{id:4,cliente:"Cliente Exemplo D",reserva:"DEMO-004",navio:"Navio Exemplo 04",navioAnterior:"",terminal:"BTP",deadline:"Sem previsão",tipo:"Pré-Stacking",quantidade:"20 UN",conteineres:"Não informado",status:"AG. Liberação",observacao:"Deadline ainda não informado pela operação.",trocouNavio:false}
+];
+const $=id=>document.getElementById(id);let activeId=null;let previousFocus=null;
+const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cls=status=>status==="Liberado"?"liberado":status==="Cancelado"?"cancelado":"aguardando";
+function paint(){
+ for(const st of ["Liberado","AG. Liberação","Cancelado"])$(st==="Liberado"?"count-liberado":st==="Cancelado"?"count-cancelado":"count-aguardando").textContent=records.filter(r=>r.status===st).length;
+ const query=$("search").value.toLocaleLowerCase("pt-BR").trim(),status=$("filter").value;
+ const filtered=records.filter(r=>(!status||r.status===status)&&[r.cliente,r.reserva,r.navio,r.terminal].some(v=>v.toLocaleLowerCase("pt-BR").includes(query)));
+ $("operations-rows").innerHTML=filtered.map(r=>'<tr><td><strong>'+esc(r.cliente)+'</strong><small>'+esc(r.reserva)+'</small></td><td>'+esc(r.navio)+(r.trocouNavio?'<div class="alert">Trocou navio</div>':'')+'</td><td>'+esc(r.terminal)+'</td><td>'+esc(r.deadline)+'</td><td><span class="pill '+cls(r.status)+'">'+esc(r.status)+'</span></td><td><button class="view-btn" data-id="'+r.id+'">Ver detalhes</button></td></tr>').join("");
+ $("empty").hidden=filtered.length>0;
+}
+function details(){
+ const r=records.find(x=>x.id===activeId);if(!r)return;
+ $("detail-title").textContent=r.reserva;$("detail-subtitle").textContent=r.cliente;
+ const fields=[["Cliente",r.cliente],["Reserva",r.reserva],["Navio atual",r.navio],["Terminal",r.terminal],["Deadline",r.deadline],["Tipo de operação",r.tipo],["Contêineres previstos",r.quantidade],["Identificadores",r.conteineres]];
+ $("detail-fields").innerHTML=fields.map(([k,v])=>'<div class="detail-item"><small>'+esc(k)+'</small><strong>'+esc(v)+'</strong></div>').join("");
+ $("status-select").value=r.status;$("observation").value=r.observacao;
+ $("ship-alert").hidden=!r.trocouNavio;
+ $("ship-alert").textContent=r.trocouNavio?"ATENÇÃO: trocou navio. Navio anterior: "+r.navioAnterior+". Navio atual: "+r.navio+".":"";
+ highlight();
+}
+function highlight(){
+ const status=$("status-select").value;const note=$("observation").value.trim();
+ $("reason").hidden=status==="Liberado";
+ $("reason").className="reason"+(status==="Cancelado"?" cancel":"");
+ $("reason").textContent=(status==="Cancelado"?"Motivo do cancelamento: ":"Motivo da pendência: ")+(note||"Observação ainda não informada.");
+}
+function closeDetails(){$("overlay").hidden=true;activeId=null;document.body.style.overflow="";previousFocus?.focus();}
+$("operations-rows").addEventListener("click",event=>{const btn=event.target.closest("button[data-id]");if(!btn)return;previousFocus=btn;activeId=Number(btn.dataset.id);details();$("overlay").hidden=false;document.body.style.overflow="hidden";$("close").focus()});
+$("status-select").addEventListener("change",highlight);$("observation").addEventListener("input",highlight);
+$("save").addEventListener("click",()=>{const r=records.find(x=>x.id===activeId);if(!r)return;const status=$("status-select").value;const observation=$("observation").value.trim();if(status!=="Liberado"&&!observation){$("observation").focus();$("observation").setCustomValidity("Informe o motivo desta situação.");$("observation").reportValidity();return}$("observation").setCustomValidity("");r.status=status;r.observacao=observation;paint();closeDetails()});
+$("close").addEventListener("click",closeDetails);$("cancel").addEventListener("click",closeDetails);
+$("overlay").addEventListener("click",e=>{if(e.target===$("overlay"))closeDetails()});
+document.addEventListener("keydown",e=>{if($("overlay").hidden)return;if(e.key==="Escape"){closeDetails();return}if(e.key==="Tab"){const nodes=[...$("overlay").querySelectorAll("button,select,textarea")].filter(x=>!x.disabled);const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+$("search").addEventListener("input",paint);$("filter").addEventListener("change",paint);paint();
+</script></body>
 </html>
