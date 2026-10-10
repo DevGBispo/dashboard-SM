@@ -105,32 +105,36 @@ const norm=str=>String(str).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUp
 
 function parseCrystalReportCSV(text){
  const rows=parseCSV(text,",");
- const isReport=rows.some(r=>norm(r[0]||"")==="PLANEJAMENTODEPATIO"&&r.some(c=>norm(c)==="NAVIO")&&r.some(c=>norm(c)==="RESERVA"));
- if(!isReport)return null;
- const items=[];let last=null;let currentType="";
+ const report=rows.some(row=>norm(row[0]||"")==="PLANEJAMENTODEPATIO" && norm(row[2]||"")==="NAVIO" && norm(row[3]||"")==="RESERVA");
+ if(!report)return null;
+ const items=[];
+ let last=null,section="";
+ function register(fields){
+  if(fields.length<9)return;
+  const [navio,reserva,armador,cliente,deadline,terminal,quantidade,observacao,container]=fields;
+  if(!/^[A-Z0-9]{7,20}$/i.test(String(reserva||"").trim()) || !String(navio||"").trim())return;
+  const observation=String(observacao||"").trim();
+  const key=norm(observation);
+  const status=/CANCEL/.test(key)?"Cancelado":/AGLIBER|AGUARD|PENDENT|NAOLIBER/.test(key)?"AG. Liberação":/LIBERAD/.test(key)?"Liberado":"AG. Liberação";
+  last={navio:String(navio).trim(),reserva:String(reserva).trim(),armador:String(armador||"").trim(),cliente:String(cliente||"").trim(),deadline:String(deadline||"").trim()||"S/PREVISÃO",terminal:String(terminal||"").trim(),quantidade:String(quantidade||"").trim(),observacao:observation,conteineres:String(container||"").trim(),tipo:section,status,trocouNavio:/TROCOUNAVIO|MUDOUNAVIO|ALTERACAODENAVIO/.test(key),navioAnterior:""};
+  items.push(last);
+ }
  for(const row of rows){
-  if(norm(row[0]||"")==="PLANEJAMENTODEPATIO"&&row.length===11){currentType=row[10]||"";continue}
-  if(row.length===11&&/^[0-9]{6,}/.test(row[1]||"")){const [navio,reserva,armador,cliente,deadline,terminal,quantidade,observacao,container]=row;last={navio,reserva,armador,cliente,deadline,terminal,quantidade:(quantidade||"").replace(/[\t\r\n ]+/g," ").trim(),observacao:observacao||"",conteineres:container||"",tipo:currentType,status:/LIBERAD/i.test(observacao||"")?"Liberado":"AG. Liberação",trocouNavio:/TROCOU NAVIO|MUDOU NAVIO/i.test(observacao||"")};items.push(last);continue}
-  if(norm(row[0]||"")!=="PLANEJAMENTODEPATIO")continue;
-  const prefix=row.findIndex((v,i)=>i>=9&&norm(v)==="OBSERVACOESGERAIS");
-  if(prefix<0)continue;
-  const values=row.slice(prefix+1);
-  if(values.length>=9&&/^\d{2,}/.test(values[1]||"")){
-   const [navio,reserva,armador,cliente,deadline,terminal,quantidade,observacao,container]=values;
-   last={navio:navio||"Não informado",reserva,armador,cliente,deadline,terminal,quantidade:(quantidade||"").replace(/\s+/g," ").trim(),observacao:observacao||"",conteineres:container||"",tipo:currentType||row[1]||"",status:"AG. Liberação",trocouNavio:/TROCOU NAVIO|MUDOU NAVIO|ALTERACAO DE NAVIO/i.test((observacao||"").normalize("NFD").replace(/[\u0300-\u036f]/g,""))};
-   const obs=norm(observacao||"");
-   if(/CANCEL/.test(obs))last.status="Cancelado";
-   else if(/LIBERAD/.test(obs)&&!/AGLIBER|NAOLIBER/.test(obs))last.status="Liberado";
-   items.push(last);
-  }else if(last&&values.length>=1){
-   const container=String(values[0]||"").trim();
-   if(/^[A-Z]{4}\d{7}$/.test(container))last.conteineres+=(last.conteineres?", ":"")+container;
+  if(norm(row[0]||"")==="PLANEJAMENTODEPATIO"){
+   if(row.length===11&&norm(row[2])==="NAVIO"){section=String(row[10]||"").trim();last=null;continue;}
+   const tail=row.slice(10);
+   if(row.length>=21){register(tail);continue;}
+   if(row.length>=13&&last){
+    const ct=String(tail[0]||"").trim();
+    if(/^[A-Z]{4}[0-9]{7}$/.test(ct))last.conteineres+=(last.conteineres?", ":"")+ct;
+   }
+  }else if(row.length>=11){
+   register(row);
   }
  }
- if(!items.length)throw Error("Relatório Crystal Reports identificado, porém nenhuma reserva válida foi encontrada.");
+ if(!items.length)throw Error("Relatório reconhecido, mas nenhuma reserva foi extraída.");
  return items;
 }
-
 function recordsFromCSV(text){
  const crystal=parseCrystalReportCSV(text);if(crystal)return crystal;
  const rawLines=text.replace(/^\uFEFF/,"").split(/\r?\n/).filter(Boolean);
