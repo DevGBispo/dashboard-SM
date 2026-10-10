@@ -112,7 +112,7 @@ function parseCrystalReportCSV(text){
  function register(fields){
   if(fields.length<9)return;
   const [navio,reserva,armador,cliente,deadline,terminal,quantidade,observacao,container]=fields;
-  if(!/^[A-Z0-9]{7,20}$/i.test(String(reserva||"").trim()) || !String(navio||"").trim())return;
+  if(!/^[A-Z0-9][A-Z0-9\/-]{5,29}$/i.test(String(reserva||"").trim()) || !String(navio||"").trim())return;
   const observation=String(observacao||"").trim();
   const key=norm(observation);
   const status=/CANCEL/.test(key)?"Cancelado":/AGLIBER|AGUARD|PENDENT|NAOLIBER/.test(key)?"AG. Liberação":/LIBERAD/.test(key)?"Liberado":"AG. Liberação";
