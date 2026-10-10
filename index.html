@@ -37,7 +37,7 @@ button:focus-visible{outline:3px solid #a2ca4f;outline-offset:3px}
 <div class="main">
 <header class="header"><div class="logo">S<span>.</span>M</div><div class="header-divider"></div><div class="header-title">S. MAGALHÃES</div></header>
 <main class="content" aria-label="Operações" id="operations-page">
-<div class="page-heading"><div><h1>Operações</h1><p>Reservas, navios, deadlines e situações operacionais.</p></div><div class="upload"><label for="upload-csv" class="primary upload-btn">Importar CSV</label><input id="upload-csv" type="file" accept=".csv,text/csv,text/plain" hidden><label for="upload-json" class="ghost upload-btn">Importar JSON</label><input id="upload-json" type="file" accept=".json,application/json" hidden><span class="demo-note" id="import-message" role="status">Nenhum dado carregado • arquivo local, sem envio ao servidor</span></div></div>
+<div class="page-heading"><div><h1>Operações</h1><p>Reservas, navios, deadlines e situações operacionais.</p></div><div class="upload"><label for="upload-csv" class="primary upload-btn">Importar CSV</label><input id="upload-csv" type="file" accept=".csv,text/csv,text/plain" hidden><label for="upload-json" class="ghost upload-btn">Importar JSON</label><input id="upload-json" type="file" accept=".json,application/json" hidden><span class="demo-note" id="import-message" role="status">Nenhum dado carregado • arquivo local, sem envio ao servidor</span><span class="demo-note" id="storage-state" role="status">Preparando armazenamento local...</span></div></div>
 <div class="stats"><div class="stat"><span>Liberado</span><strong id="count-liberado">0</strong><small class="units" id="units-liberado">0 unidades previstas</small></div><div class="stat"><span>AG. Liberação</span><strong id="count-aguardando">0</strong><small class="units" id="units-aguardando">0 unidades previstas</small></div><div class="stat"><span>Cancelado</span><strong id="count-cancelado">0</strong><small class="units" id="units-cancelado">0 unidades previstas</small></div></div>
 <div class="toolbar"><input id="search" type="search" placeholder="Buscar cliente, reserva ou navio" aria-label="Buscar operações"><select id="filter" aria-label="Filtrar situação"><option value="">Todas as situações</option><option value="Liberado">Liberado</option><option value="AG. Liberação">AG. Liberação</option><option value="Cancelado">Cancelado</option></select></div>
 <div class="table-container"><table class="operations"><thead><tr><th>Navio</th><th>Reserva</th><th>Unidades</th><th>Cliente</th><th>Terminal</th><th>Deadline</th><th>Situação</th><th>Detalhes</th></tr></thead><tbody id="operations-rows"></tbody></table><div class="empty" id="empty" hidden>Nenhuma operação encontrada.</div></div>
@@ -96,7 +96,7 @@ $("save").addEventListener("click",()=>{
  const edit={};$("detail-fields").querySelectorAll("input[data-field]").forEach(input=>edit[input.dataset.field]=input.value.trim());
  if(!edit.navio||!edit.reserva){alert("Navio e reserva são obrigatórios.");return}
  Object.assign(r,edit,{status,observacao:observation,trocouNavio:$("changed-vessel").checked});
- paint();renderCalls();renderUnits();closeDetails();
+ paint();renderCalls();renderUnits();persist();closeDetails();
 });
 
 $("close").addEventListener("click",closeDetails);$("cancel").addEventListener("click",closeDetails);
@@ -183,7 +183,7 @@ function loadRecords(raw){
   if(!item||!item.reserva||!item.navio)throw Error("Navio ou reserva ausente no registro "+(i+1));
   return {id:i+1,navio:String(item.navio),reserva:String(item.reserva),cliente:String(item.cliente||""),armador:String(item.armador||""),deadline:String(item.deadline||"S/PREVISÃO"),terminal:String(item.terminal||""),tipo:String(item.tipo||""),quantidade:String(item.quantidade||""),conteineres:String(item.conteineres||""),status:allowed.includes(item.status)?item.status:"AG. Liberação",observacao:String(item.observacao||""),trocouNavio:item.trocouNavio===true,navioAnterior:String(item.navioAnterior||"")};
  });
- records.splice(0,records.length,...loaded);selectedBookings.clear();confirmedBookings.clear();callConfig.clear();loadedUnits.clear();renderCalls();renderUnits();$("search").value="";$("filter").value="";paint();
+ records.splice(0,records.length,...loaded);selectedBookings.clear();confirmedBookings.clear();callConfig.clear();loadedUnits.clear();renderCalls();renderUnits();persist();$("search").value="";$("filter").value="";paint();
  $("import-message").textContent=records.length+" reservas importadas localmente • alterações não são salvas";
 }
 async function importLocalFile(event,kind){
@@ -235,9 +235,22 @@ function renderUnits(){
  }).join("")||'<div class="empty">Nenhuma unidade encontrada. Confirme a programação na aba Chamada ou confira a pesquisa.</div>';
 }
 $("unit-search").addEventListener("input",renderUnits);$("unit-filter").addEventListener("change",renderUnits);
-$("unit-list").addEventListener("input",event=>{const input=event.target.closest("[data-driver]");if(!input)return;const data=loadedUnits.get(input.dataset.driver)||{driver:"",confirmed:false};data.driver=input.value;loadedUnits.set(input.dataset.driver,data)});
-$("unit-list").addEventListener("click",event=>{const button=event.target.closest("[data-confirm]");if(!button)return;const key=button.dataset.confirm;const data=loadedUnits.get(key)||{driver:"",confirmed:false};if(!data.confirmed&&!data.driver.trim()){$("unit-message").textContent="Informe o motorista antes de confirmar o carregamento.";const input=[...$("unit-list").querySelectorAll("[data-driver]")].find(x=>x.dataset.driver===key);input?.focus();return}data.confirmed=!data.confirmed;loadedUnits.set(key,data);$("unit-message").textContent=data.confirmed?"Carregamento confirmado nesta sessão.":"Confirmação desfeita.";renderUnits()});
+$("unit-list").addEventListener("input",event=>{const input=event.target.closest("[data-driver]");if(!input)return;const data=loadedUnits.get(input.dataset.driver)||{driver:"",confirmed:false};data.driver=input.value;loadedUnits.set(input.dataset.driver,data);persist()});
+$("unit-list").addEventListener("click",event=>{const button=event.target.closest("[data-confirm]");if(!button)return;const key=button.dataset.confirm;const data=loadedUnits.get(key)||{driver:"",confirmed:false};if(!data.confirmed&&!data.driver.trim()){$("unit-message").textContent="Informe o motorista antes de confirmar o carregamento.";const input=[...$("unit-list").querySelectorAll("[data-driver]")].find(x=>x.dataset.driver===key);input?.focus();return}data.confirmed=!data.confirmed;loadedUnits.set(key,data);persist();$("unit-message").textContent=data.confirmed?"Carregamento confirmado nesta sessão.":"Confirmação desfeita.";renderUnits()});
 const selectedBookings=new Set(),callConfig=new Map();
+
+/* Armazenamento de teste: IndexedDB neste navegador, sem rede. */
+const DB_NAME="dashboard-sm-test",STORE="workspace",DB_VERSION=1;
+let dbHandle=null,hydrating=true,saveQueue=Promise.resolve();
+function openTestDB(){return new Promise((resolve,reject)=>{if(!("indexedDB" in window))return reject(Error("IndexedDB indisponível"));const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(STORE))req.result.createObjectStore(STORE)};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+function dbGet(db,key){return new Promise((resolve,reject)=>{const t=db.transaction(STORE,"readonly"),req=t.objectStore(STORE).get(key);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+function dbPut(db,key,value){return new Promise((resolve,reject)=>{const t=db.transaction(STORE,"readwrite");t.objectStore(STORE).put(value,key);t.oncomplete=()=>resolve();t.onerror=()=>reject(t.error)})}
+function snapshot(){return {version:1,records:records,selectedBookings:[...selectedBookings],confirmedBookings:[...confirmedBookings],callConfig:[...callConfig],loadedUnits:[...loadedUnits]}}
+function persist(){if(hydrating||!dbHandle)return;const snap=snapshot();saveQueue=saveQueue.catch(()=>{}).then(()=>dbPut(dbHandle,"session",snap)).catch(e=>{$("storage-state").textContent="Falha ao salvar no navegador: "+e.message});}
+async function restore(){try{dbHandle=await openTestDB();const saved=await dbGet(dbHandle,"session");if(saved&&saved.version===1){if(Array.isArray(saved.records))records.splice(0,records.length,...saved.records);for(const key of saved.selectedBookings||[])selectedBookings.add(String(key));for(const key of saved.confirmedBookings||[])confirmedBookings.add(String(key));for(const [key,value] of saved.callConfig||[])callConfig.set(key,value);for(const [key,value] of saved.loadedUnits||[])loadedUnits.set(key,value);$("storage-state").textContent="Dados locais restaurados • disponíveis após F5";}else{$("storage-state").textContent="Armazenamento local pronto • dados preservados após F5";}}
+catch(e){$("storage-state").textContent="Armazenamento indisponível: "+e.message}
+finally{hydrating=false;paint();renderCalls();renderUnits()}}
+
 function callKey(r){return String(r.id)}
 function renderCalls(){
  const q=$("call-search").value.toLocaleLowerCase("pt-BR").trim();
@@ -251,8 +264,8 @@ function renderCalls(){
  const total=[...groups.values()].reduce((acc,g)=>acc+g.units,0);
  $("call-summary").innerHTML=groups.size?'<strong>'+selectedBookings.size+' reservas · '+total+' unidades previstas</strong><div>'+[...groups].map(([t,g])=>g.units+' unidades para '+esc(t)).join(' • ')+'</div>':"Nenhuma reserva selecionada.";
 }
-$("call-list").addEventListener("change",e=>{const item=e.target.closest("input[data-booking]");if(!item)return;item.checked?selectedBookings.add(item.dataset.booking):selectedBookings.delete(item.dataset.booking);renderCalls()});
-$("call-groups").addEventListener("input",e=>{const input=e.target.closest("input[data-terminal]");if(!input)return;const v=callConfig.get(input.dataset.terminal)||{time:"",patio:""};v[input.dataset.field]=input.value;callConfig.set(input.dataset.terminal,v)});
+$("call-list").addEventListener("change",e=>{const item=e.target.closest("input[data-booking]");if(!item)return;item.checked?selectedBookings.add(item.dataset.booking):selectedBookings.delete(item.dataset.booking);renderCalls();persist()});
+$("call-groups").addEventListener("input",e=>{const input=e.target.closest("input[data-terminal]");if(!input)return;const v=callConfig.get(input.dataset.terminal)||{time:"",patio:""};v[input.dataset.field]=input.value;callConfig.set(input.dataset.terminal,v);persist()});
 $("call-search").addEventListener("input",renderCalls);
 $("call-preview").addEventListener("click",()=>{
  const chosen=records.filter(r=>selectedBookings.has(callKey(r)));
@@ -262,10 +275,10 @@ $("call-preview").addEventListener("click",()=>{
  if(missing.length){$("call-feedback").textContent="Informe horário e pátio para: "+missing.join(", ");return}
  confirmedBookings.clear();chosen.forEach(r=>confirmedBookings.add(callKey(r)));
  loadedUnits.clear();
- renderUnits();$("call-feedback").textContent="Programação confirmada: "+chosen.length+" reserva(s) enviadas ao Controle de embarque.";
+ renderUnits();persist();$("call-feedback").textContent="Programação confirmada: "+chosen.length+" reserva(s) enviadas ao Controle de embarque.";
  document.querySelector('[data-view="controle"]').click();
  $("unit-message").textContent="Programação recebida da Chamada. Vincule os motoristas e confirme os carregamentos.";
 });
-$("search").addEventListener("input",paint);$("filter").addEventListener("change",paint);paint();
+$("search").addEventListener("input",paint);$("filter").addEventListener("change",paint);restore();
 </script></body>
 </html>
